@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView,mixins,ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
+
 # Create your views here.
 
 ### CBV ###
@@ -99,9 +100,34 @@ class StudentRUD(RetrieveUpdateDestroyAPIView):
 
 ### CBV ### ### ViewSet ###
 
+
+
+
+
+
+from .pagination import SmallPageNumberPagination, MyLimitOffsetPagination, MyCursorPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 class StudentGRUD(ModelViewSet):
     queryset=Student.objects.all()
     serializer_class=StudentSerializer
+    # pagination_class= SmallPageNumberPagination
+    # pagination_class= MyLimitOffsetPagination
+
+    ## add filterset fields
+    filter_backends=[DjangoFilterBackend, SearchFilter]
+    search_fields=['first_name']
+    filterset_fields=['first_name', 'last_name', 'number']
+    
+    
+    def get_queryset(self):
+        queryset=Student.objects.all()
+        path = self.request.query_params.get('path')
+        if path is not None:
+            mypath = Path.objects.get(path_name=path)
+            queryset = queryset.filter(path=mypath.id)
+        return queryset
+
 
     @action(detail=False,methods=['GET'])
     def student_count(self,request):
