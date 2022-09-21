@@ -111,7 +111,7 @@ from rest_framework.filters import SearchFilter
 class StudentGRUD(ModelViewSet):
     queryset=Student.objects.all()
     serializer_class=StudentSerializer
-    # pagination_class= SmallPageNumberPagination
+    pagination_class= SmallPageNumberPagination
     # pagination_class= MyLimitOffsetPagination
 
     ## add filterset fields
